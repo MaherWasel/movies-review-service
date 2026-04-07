@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const pinoHttp = require('pino-http');
 const config = require('./config');
 const logger = require('./logger');
@@ -9,6 +10,7 @@ const { connectRedis, disconnectRedis } = require('./services/redis');
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(pinoHttp({ logger }));
 
