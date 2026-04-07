@@ -1,3 +1,4 @@
+const http = require('http');
 const { PubSub } = require('@google-cloud/pubsub');
 const { Firestore } = require('@google-cloud/firestore');
 const pino = require('pino');
@@ -72,6 +73,21 @@ async function handleMessage(message) {
 }
 
 async function start() {
+  // Cloud Run requires an HTTP server for health checks
+  const port = process.env.PORT || 8080;
+  const server = http.createServer((req, res) => {
+    if (req.url === '/health') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ status: 'ok', service: 'review-worker' }));
+    } else {
+      res.writeHead(404);
+      res.end();
+    }
+  });
+  server.listen(port, () => {
+    logger.info({ port }, 'Worker health server started');
+  });
+
   const subscription = pubsub.subscription(config.subscriptionName);
 
   subscription.on('message', handleMessage);

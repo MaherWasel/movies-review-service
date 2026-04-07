@@ -1,0 +1,5 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'Dockerfile.worker', '-t', 'me-central1-docker.pkg.dev/project-e005e972-f26f-4d68-b51/movies-docker/review-worker:latest', '.']
+images:
+  - 'me-central1-docker.pkg.dev/project-e005e972-f26f-4d68-b51/movies-docker/review-worker:latest'
