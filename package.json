@@ -1,0 +1,26 @@
+{
+  "name": "movies-review-service",
+  "version": "1.0.0",
+  "description": "Reviews and likes microservice for Cloud Run",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "worker": "node src/worker.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@google-cloud/firestore": "^7.11.0",
+    "@google-cloud/pubsub": "^4.9.0",
+    "express": "^4.21.0",
+    "firebase-admin": "^13.0.0",
+    "ioredis": "^5.4.1",
+    "pino": "^9.5.0",
+    "pino-http": "^10.3.0"
+  },
+  "devDependencies": {
+    "pino-pretty": "^13.0.0"
+  }
+}
