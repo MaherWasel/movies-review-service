@@ -33,6 +33,7 @@ app.use((err, req, res, _next) => {
 });
 
 let server;
+let shuttingDown = false;
 
 async function start() {
   await connectRedis();
@@ -40,14 +41,29 @@ async function start() {
   server = app.listen(config.port, () => {
     logger.info({ port: config.port }, 'Review service started');
   });
+
+  server.keepAliveTimeout = 65 * 1000;
+  server.headersTimeout = 66 * 1000;
 }
 
+// Graceful shutdown — drain in-flight requests before exiting
 async function shutdown(signal) {
-  logger.info({ signal }, 'Shutdown signal received');
+  if (shuttingDown) return;
+  shuttingDown = true;
+
+  logger.info({ signal }, 'Shutdown signal received — draining connections');
 
   if (server) {
-    server.close(() => {
-      logger.info('HTTP server closed');
+    await new Promise((resolve) => {
+      server.close(() => {
+        logger.info('HTTP server closed — all in-flight requests drained');
+        resolve();
+      });
+
+      setTimeout(() => {
+        logger.warn('Forced shutdown after drain timeout');
+        resolve();
+      }, 10000);
     });
   }
 
